@@ -53,30 +53,45 @@ public class Main {
 
                     if (data[i].equals("\"-1000\""))
                     {
-                        System.out.println("here" + data[i]);
+                        //System.out.println("filter is active: " + data[i]);
                         continue;
                     }
                     else{
-
+                        System.out.println("filter is inactive: " + data[i]);
                         int j = 0;
                         while (match == 0) {
 
-                            //run through the ll parent children to check if there is a list for this coordinate set already
+
+
+
+
+
+
+
+                            //run through the  LLparent children to check if there is a list for this coordinate set already
                             if (LLParent.size()>j) {
                                 //skip loop if the list is blank
+
+
+                                /*
                                 if (LLParent.get(j).size()==0){
                                     continue;
-                                }
+                                } */
 
-                                //System.out.printf("j is :%d \nLLparent size is %d\n",j, LLParent.size());
+                                System.out.printf("j is :%d \nLLparent size is %d\n",j, LLParent.size());
                                 tempxy[0] = LLParent.get(j).get(0)[0];
                                 tempxy[1] = LLParent.get(j).get(0)[1];
                             }
+
+
                             //if j exceeds the size of the list, it means there is no match
                             else{
                                 //System.out.print("too long\n");
                                 break;
                             }
+
+
+
 
                             //if the x and y coords of the data
                             if (tempxy[0].equals(xy[0]) && tempxy[1].equals(xy[1])) {
@@ -90,29 +105,49 @@ public class Main {
                                 j++;
                             }
                         }
+//logic seems sound here ^
 
+                        //LOOPS FOREVER IF YOu TRY TO PUT IN NEW LLCHILD
 
+//check down here v
 
-
+                        //if there is a match
                         if (match == 1) {
                             //check if the significant column is populated
-                            //if not, populate the array at the significant column with the significant data
+
+
+
                             for (int k = 0; k < LLParent.get(j).size(); k++) {
+
+                                //if not populated, populate the array at the significant column with the significant data
                                 if (LLParent.get(j).get(k)[beaconNum]== null) {
                                     LLParent.get(j).get(k)[beaconNum] = data[beaconNum];
                                 }
                                 //if it is populated, append new link with link[0]=tempxy[0], and link[1]=tempxy[1], link[significantCol]=significantData;
+                                //errors occur when a column already has a value
+
+                                //EROROROROROR CAN'T ADD DA SHIT TO LINKED LIST IF REPEATED COLUMN READING
                                 else {
-                                    LLParent.add(new LinkedList<>());
+
+                                    String[] stringo = new String[36];
+                                    stringo[0]=tempxy[0];
+                                    stringo[1]=tempxy[1];
+
+                                    //maybe -1?
+                                    stringo[beaconNum] = data[beaconNum-1];
+
+                                    LLParent.get(j).add(stringo);
 
                                     //last link in the new list, with the new data
-                                    LLParent.get(j).get(LLParent.get(j).size()-1)[0] = tempxy[0];
-                                    LLParent.get(j).get(LLParent.get(j).size()-1)[beaconNum] = data[beaconNum];
+                                    //LLParent.get(j).get(LLParent.get(j).size()-1)[0] = tempxy[0];
+                                    //LLParent.get(j).get(LLParent.get(j).size()-1);
 
                                 }
                             }
 
-                        } else {
+                        }
+                        //if not a match
+                        else {
                             //make new linked list corresponding to new (x,y)
                             LinkedList<String[]> list = new LinkedList<>();
                             LLParent.add(list);
@@ -121,7 +156,7 @@ public class Main {
                             dataRow[0] = xy[0];
                             dataRow[1] = xy[1];
                             //-1 to account for the lack of key column (which is in the imported data) in the linked list.
-                            dataRow[beaconNum] = data[beaconNum - 1];
+                            dataRow[beaconNum] = data[beaconNum-1];
                             LLParent.getLast().add(dataRow);
                             //The corresponding (x,y) pair now has its own linked list, which has one element containing the first iteration of the (x,y) pair
                         }
@@ -147,8 +182,8 @@ public class Main {
 
             CSVWriter writer = new CSVWriter(new FileWriter("output.csv"));
             for (LinkedList<String[]> strings : LLParent) {
-                for (int j = 0; j < strings.size(); j++) {
-                    writer.writeNext(strings.get(j));
+                for (String[] string : strings) {
+                    writer.writeNext(string);
                 }
 
             }
